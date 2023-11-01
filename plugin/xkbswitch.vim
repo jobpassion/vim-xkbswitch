@@ -715,7 +715,9 @@ fun! s:xkb_switch(mode, ...)
     if s:XkbSwitchSaveILayout && !g:XkbSwitch['local'] && !s:XkbSwitchFocused
         return
     endif
-    let cur_layout = libcall(g:XkbSwitch['backend'], g:XkbSwitch['get'], '')
+    " let cur_layout = libcall(g:XkbSwitch['backend'], g:XkbSwitch['get'], '')
+    " jeffery
+    let cur_layout = system('xkbswitch -g')
     if g:XkbSwitchRestoreGlobalLayout && empty(s:XkbSwitchGlobalLayout)
         let s:XkbSwitchGlobalLayout = cur_layout
     endif
@@ -728,8 +730,10 @@ fun! s:xkb_switch(mode, ...)
                     \ (exists('b:xkb_nlayout') ? b:xkb_nlayout : '')
         if nlayout != ''
             if cur_layout != nlayout
-                call libcall(g:XkbSwitch['backend'], g:XkbSwitch['set'],
-                            \ nlayout)
+                " call libcall(g:XkbSwitch['backend'], g:XkbSwitch['set'],
+                "             \ nlayout)
+                " jeffery
+                silent call system('xkbswitch -s ' . nlayout)
             endif
         endif
         if g:XkbSwitchAssistNKeymap || g:XkbSwitchAssistSKeymap
@@ -801,8 +805,10 @@ fun! s:xkb_switch(mode, ...)
                 if cur_synid == role && exists('b:xkb_saved_cur_layout[role]')
                     if b:xkb_saved_cur_layout[role] != cur_layout
                         let switched = b:xkb_saved_cur_layout[role]
-                        call libcall(g:XkbSwitch['backend'],
-                                    \ g:XkbSwitch['set'], switched)
+                        " call libcall(g:XkbSwitch['backend'],
+                        "             \ g:XkbSwitch['set'], switched)
+                        " jeffery
+                        silent call system('xkbswitch -s ' . switched)
                     endif
                     break
                 endif
@@ -823,8 +829,10 @@ fun! s:xkb_switch(mode, ...)
                         let not_managed = 0
                         if switched != cur_layout &&
                                     \ !exists('b:xkb_ilayout_managed')
-                            call libcall(g:XkbSwitch['backend'],
-                                        \ g:XkbSwitch['set'], switched)
+                            " call libcall(g:XkbSwitch['backend'],
+                            "             \ g:XkbSwitch['set'], switched)
+                            " jeffery
+                            silent call system('xkbswitch -s ' . switched)
                             let not_managed = 1
                         endif
                         if exists('g:XkbSwitchIEnterHook') && (not_managed ||
@@ -866,7 +874,9 @@ fun! s:xkb_save(...)
     if !xkb_loaded
         return
     endif
-    let cur_layout = libcall(g:XkbSwitch['backend'], g:XkbSwitch['get'], '')
+    " let cur_layout = libcall(g:XkbSwitch['backend'], g:XkbSwitch['get'], '')
+    " jeffery
+    let cur_layout = system('xkbswitch -g')
     if save_ilayout_param_local
         " FIXME: is there a way to find cursor position in the abandoned
         " buffer? If no then we cannot say what syntax role or 'xkb_layout'
